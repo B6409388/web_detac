@@ -1,40 +1,43 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import Webcam from "react-webcam";
+import { useGeolocated } from "react-geolocated";
 
 const CameraComponent = () => {
   const webcamRef = useRef(null);
-  const [location, setLocation] = useState({ lat: null, long: null });
 
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            long: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error("Error retrieving location:", error);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-  };
+  // ใช้ useGeolocated เพื่อดึงข้อมูลตำแหน่งที่ตั้งของผู้ใช้
+  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
+    useGeolocated({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      userDecisionTimeout: 5000,
+    });
 
   const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
+    const imageSrc = webcamRef.current.getScreenshot(); // ถ่ายรูปและแปลงเป็น Base64
 
-    getLocation();
+    if (!isGeolocationAvailable) {
+      console.error("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
+      return;
+    }
 
-    const data = {
-      image: imageSrc,
-      lat: location.lat,
-      long: location.long,
-    };
+    if (!isGeolocationEnabled) {
+      console.error("คุณยังไม่ได้เปิดการใช้งานระบุตำแหน่ง");
+      return;
+    }
 
-    console.log(data); 
+    if (coords) {
+      const data = {
+        image: imageSrc,
+        lat: coords.latitude,
+        long: coords.longitude,
+      };
+
+      console.log(data);
+    } else {
+      console.log("กำลังรอรับข้อมูลตำแหน่ง...");
+    }
   };
 
   return (
@@ -46,7 +49,7 @@ const CameraComponent = () => {
         width={320}
         height={240}
       />
-      <button onClick={capture}>ถ่ายรูป</button>
+      <button onClick={capture}>ถ่ายรูปและบันทึกตำแหน่ง</button>
     </div>
   );
 };
