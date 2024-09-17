@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 // เชื่อมต่อ MongoDB Atlas
 const dbURI =
-  "mongodb+srv://rattanunforwork:new123456@cluster0.s38jb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://touchy:touchy123456@cluster0.s38jb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 mongoose
   .connect(dbURI) 
   .then(() => console.log("Connected to MongoDB Atlas"))
