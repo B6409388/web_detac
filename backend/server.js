@@ -7,23 +7,34 @@ const port = process.env.PORT || 3000;
 
 // เชื่อมต่อ MongoDB Atlas
 const dbURI =
-  "mongodb+srv://touchy:touchy123456@cluster0.s38jb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+  "mongodb+srv://touchy:touchy123456@cluster0.s38jb.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0";
 mongoose
-  .connect(dbURI) 
+  .connect(dbURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch((err) => console.error("Failed to connect to MongoDB Atlas", err));
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: "10mb" })); // เพิ่มขนาด limit
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
-
-app.use(express.json()); // สำหรับการ parse JSON request body
 
 // ตัวอย่าง Route
 app.use("/api/data", require("./routes/licentplate"));
+
+// Home route
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+// Error-handling middleware (จัดการข้อผิดพลาด)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res
+    .status(500)
+    .send({ message: "Something went wrong!", error: err.message });
 });
 
 // เริ่มเซิร์ฟเวอร์
