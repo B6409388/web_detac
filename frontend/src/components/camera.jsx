@@ -50,7 +50,7 @@ const CameraComponent = () => {
 
     if (coords) {
       const data = {
-        image: imageSrc,
+        image: "23232",
         lat: coords.latitude,
         long: coords.longitude,
       };
