@@ -13,6 +13,28 @@ const CameraComponent = () => {
       userDecisionTimeout: 5000,
     });
 
+  // ฟังก์ชันส่งข้อมูลไปยัง Backend
+  const sendToBackend = async (data) => {
+    try {
+      const response = await fetch("http://localhost:3000/api/data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("การส่งข้อมูลไปยัง Backend ไม่สำเร็จ");
+      }
+
+      const result = await response.json();
+      console.log("ผลลัพธ์จาก Backend:", result);
+    } catch (error) {
+      console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+    }
+  };
+
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot(); // ถ่ายรูปและแปลงเป็น Base64
 
@@ -33,17 +55,10 @@ const CameraComponent = () => {
         long: coords.longitude,
       };
 
-      // sent data to backend server endpoint http://localhost:3000/api/data
-      if (data) {
-        try {
-          const res = createLicensePlate(data);
-          console.log(res);
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      console.log("ข้อมูลที่จะส่ง:", data);
 
-      console.log(data);
+      // เรียกฟังก์ชันเพื่อส่งข้อมูลไปยัง Backend
+      sendToBackend(data);
     } else {
       console.log("กำลังรอรับข้อมูลตำแหน่ง...");
     }
