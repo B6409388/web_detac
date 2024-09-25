@@ -62,10 +62,11 @@ const CameraComponent = () => {
     }
   };
 
+  // ข้อกำหนดของกล้องสำหรับการเลือกกล้องหลัง
   const videoConstraints = {
+    facingMode: "environment", // เลือกกล้องหลัง
     width: 320,
     height: 240,
-    facingMode: "user", // กำหนดให้ใช้กล้องหน้า
   };
 
   return (
@@ -74,7 +75,7 @@ const CameraComponent = () => {
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints} // ใช้ videoConstraints เพื่อกำหนดกล้อง
+        videoConstraints={videoConstraints} // ใช้กล้องหลัง
       />
       <button onClick={capture}>ถ่ายรูปและบันทึกตำแหน่ง</button>
     </div>
