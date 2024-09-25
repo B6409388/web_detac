@@ -16,7 +16,7 @@ const CameraComponent = () => {
   // ฟังก์ชันส่งข้อมูลไปยัง Backend
   const sendToBackend = async (data) => {
     try {
-      const response = await fetch("http://localhost:3000/api/data", {
+      const response = await fetch("https://web-detac-1.onrender.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
