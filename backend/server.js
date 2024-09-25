@@ -5,9 +5,8 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// เชื่อมต่อ MongoDB Atlas
-const dbURI =
-  "mongodb+srv://beamy:beamy123456@cluster0.s38jb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// เชื่อมต่อ MongoDB Atlas โดยใช้ Environment Variable
+const dbURI = process.env.DB_URL || "mongodb://localhost:27017/myDatabase"; // ใช้ DB_URL จาก Environment Variables
 mongoose
   .connect(dbURI, {
     useNewUrlParser: true,
