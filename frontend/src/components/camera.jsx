@@ -62,14 +62,19 @@ const CameraComponent = () => {
     }
   };
 
+  const videoConstraints = {
+    width: 320,
+    height: 240,
+    facingMode: "user", // กำหนดให้ใช้กล้องหน้า
+  };
+
   return (
     <div>
       <Webcam
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
-        width={320}
-        height={240}
+        videoConstraints={videoConstraints} // ใช้ videoConstraints เพื่อกำหนดกล้อง
       />
       <button onClick={capture}>ถ่ายรูปและบันทึกตำแหน่ง</button>
     </div>
