@@ -1,4 +1,4 @@
-const url = "http://localhost:3000/api";
+const url = "https://web-detac-1.onrender.com";
 
 export const createLicensePlate = async (data) => {
   const response = await fetch(`${url}/data`, {
