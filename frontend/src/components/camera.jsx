@@ -50,14 +50,12 @@ const CameraComponent = () => {
 
     if (coords) {
       const data = {
-        image: "23232",
+        image: imageSrc,
         lat: coords.latitude,
         long: coords.longitude,
       };
 
       console.log("ข้อมูลที่จะส่ง:", data);
-
-      // เรียกฟังก์ชันเพื่อส่งข้อมูลไปยัง Backend
       sendToBackend(data);
     } else {
       console.log("กำลังรอรับข้อมูลตำแหน่ง...");
