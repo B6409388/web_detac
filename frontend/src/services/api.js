@@ -1,13 +1,32 @@
+import axios from "axios";
+
 const url = "https://web-detac-1.onrender.com/api";
 
-export const createLicensePlate = async (data) => {
-  const response = await fetch(`${url}/data`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+// // ใช้ URL สำหรับ API
+// const url = "http://localhost:3000/api"; // หรือ URL ที่คุณต้องการ เช่น https://web-detac-1.onrender.com/api
 
-  return response.json();
+// ฟังก์ชันสำหรับสร้างข้อมูลป้ายทะเบียน
+export const createLicensePlate = async (data) => {
+  try {
+    const response = await axios.post(`${url}/data`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // ส่งกลับข้อมูลที่ได้รับจากเซิร์ฟเวอร์
+  } catch (error) {
+    console.error("Error creating license plate:", error);
+    throw error; // โยน error กลับไปหากเกิดข้อผิดพลาด
+  }
+};
+
+// ฟังก์ชันเพื่อดึงข้อมูล location ทั้งหมด
+export const fetchLocations = async () => {
+  try {
+    const response = await axios.get(`${url}/data`); // ดึงข้อมูลจาก API
+    return response.data; // ส่งข้อมูลที่ได้จาก backend
+  } catch (error) {
+    console.error("Error fetching locations:", error);
+    throw error; // โยน error กลับไปหากเกิดข้อผิดพลาด
+  }
 };

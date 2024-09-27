@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { fetchLocations } from "../services/api"; // นำเข้าฟังก์ชันจาก services.js
 import "./MapComponent.css";
 
+// ฟังก์ชันสร้าง custom icon
 const createCustomIcon = (imageUrl) => {
   return L.icon({
     iconUrl: imageUrl,
@@ -14,29 +16,33 @@ const createCustomIcon = (imageUrl) => {
   });
 };
 
-const locations = [
-  {
-    lat: 14.8824,
-    long: 102.0174,
-    image:
-      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcSltvz4NShUL4wxlRBn64-Qzv6G-NFJ6mZtu8uGlMHPWccDvSSdTmyhaYfIOufxRRD2ht84h7z-LtGPMpyRtINZUTDOWh9iNdCFoZtLJZqOTIhR-vP5VVmIuESE0Jo8sxhks1QwpVL9Fw&usqp=CAc",
-    plateNumber: "9กฉ 8899",
-    province: "กรุงเทพมหานคร",
-  },
-  {
-    lat: 14.8828,
-    long: 102.0169,
-    image:
-      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTgq9SVpNP1onLiZ687izTo8j7O2TEUcrxFIYeIwotSyucrs307EYcflmPasbSFRmHjuyDPynSViNanSQJ0bu-v7nrpt1Rw39Qj3DoZdHSfgYWLN6XxYSbyNCVBqnTP&usqp=CAc",
-    plateNumber: "กต 9999",
-    province: "นนทบุรี",
-  },
-];
-
 const MapComponent = () => {
+  const [locations, setLocations] = useState([]); // สร้าง state สำหรับเก็บ location
+  const [loading, setLoading] = useState(true);  // จัดการ loading state
+
+  useEffect(() => {
+    // ใช้ฟังก์ชันจาก services เพื่อดึงข้อมูล
+    const loadLocations = async () => {
+      try {
+        const data = await fetchLocations(); // เรียกใช้ฟังก์ชันที่เราสร้างใน services
+        setLocations(data); // เก็บข้อมูลใน state
+        setLoading(false); // ปิด loading state
+      } catch (error) {
+        console.error("Error loading locations:", error);
+        setLoading(false); // ถ้าดึงข้อมูลไม่ได้ ให้ปิด loading state
+      }
+    };
+
+    loadLocations();
+  }, []);
+
+  if (loading) {
+    return <div>Loading map...</div>; // แสดงข้อความระหว่างกำลังโหลดข้อมูล
+  }
+
   return (
     <MapContainer
-      center={[14.8824, 102.0174]}
+      center={[14.8824, 102.0174]} // ตำแหน่งเริ่มต้นของแผนที่
       zoom={16}
       style={{ height: "500px", width: "100%" }}
     >
@@ -44,13 +50,14 @@ const MapComponent = () => {
       {locations.map((item, index) => (
         <Marker
           key={index}
-          position={[item.lat, item.long]}
-          icon={createCustomIcon(item.image)}
+          position={[item.lat, item.long]} // ดึง lat, long จากข้อมูลที่ได้จาก backend
+          icon={createCustomIcon(item.licentplateImg)} // สร้าง icon จาก url ของภาพ
         >
           <Popup>
             <div className="popup-content">
-              <p className="popup-plate">ทะเบียน: {item.plateNumber}</p>
-              <p className="popup-province">จังหวัด: {item.province}</p>
+              <p className="popup-plate">ทะเบียน: {item.licentplateNumber}</p>
+              <p className="popup-province">จังหวัด: {item.licentplateProvince}</p>
+              <p className="popup-date">จอดเมื่อ: {new Date(item.created_at).toLocaleString()}</p>
             </div>
           </Popup>
         </Marker>
