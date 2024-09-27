@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { Button } from "react-bootstrap";
 import Webcam from "react-webcam";
 import { useGeolocated } from "react-geolocated";
 
@@ -16,13 +17,16 @@ const CameraComponent = () => {
   // ฟังก์ชันส่งข้อมูลไปยัง Backend
   const sendToBackend = async (data) => {
     try {
-      const response = await fetch("https://web-detac-1.onrender.com/api/data", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        "https://web-detac-1.onrender.com/api/data",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("การส่งข้อมูลไปยัง Backend ไม่สำเร็จ");
@@ -62,22 +66,21 @@ const CameraComponent = () => {
     }
   };
 
-  // ข้อกำหนดของกล้องสำหรับการเลือกกล้องหลัง
   const videoConstraints = {
-    facingMode: "environment", // เลือกกล้องหลัง
-    width: 320,
-    height: 240,
+    facingMode: "environment",
   };
 
   return (
-    <div>
+    <div className="bg-secondary d-flex flex-column justify-content-center align-items-center">
       <Webcam
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints} // ใช้กล้องหลัง
+        videoConstraints={videoConstraints}
       />
-      <button onClick={capture}>ถ่ายรูปและบันทึกตำแหน่ง</button>
+      <Button onClick={capture} className="btn-pp">
+        ถ่ายรูปและบันทึกตำแหน่ง
+      </Button>
     </div>
   );
 };

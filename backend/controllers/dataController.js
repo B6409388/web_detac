@@ -26,3 +26,29 @@ exports.createData = async (req, res) => {
     res.status(400).json({ message: error.message }); // ส่งข้อผิดพลาดกลับไปยัง client
   }
 };
+
+//get
+ // ��ังก์ชันด��งข้อมูลทั้งหมดจา����านข้อมูล
+exports.getAllData = async (req, res) => {
+  try {
+    const data = await LicensePlate.find(); // ด��งข้อมูลทั้งหมดจา����านข้อมูล
+
+    res.json(data); // ส่งข้อมูลทั้งหมดกลับไปยัง client
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // ส่งข้อ��ิดพลา��กลับไปยัง client
+  }
+};
+
+//getbyid
+ // ฟังก์ชันดึงข้อมูลตาม id
+exports.getDataById = async (req, res) => {
+  try {
+    const data = await LicensePlate.findById(req.params.id); // ดึงข้อมูลตาม id
+
+    if (!data) return res.status(404).json({ message: "ไม่พบข้อมูล" }); // ตรวจสอบว่าข้อมูลหากไม่พบ
+
+    res.json(data); // ส่งข้อมูลที่พบกลับไปยัง client
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // ส่งข้อผิดพ
+  }
+}
