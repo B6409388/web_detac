@@ -2,7 +2,13 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css";
 import CameraComponent from "./components/camera";
 import MapComponent from "./components/MapComponent";
+import { useState } from "react";  // นำเข้าฟังก์ชัน useState เพื่อจัดการการปิด/เปิดเมนู
+
 function App() {
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
+
+  const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
+
   return (
     <Router>
       <div className="container">
@@ -10,7 +16,19 @@ function App() {
           <Link className="navbar-brand" to="/">
             Home
           </Link>
-          <div className="collapse navbar-collapse">
+          <button 
+            className="navbar-toggler" 
+            type="button" 
+            data-toggle="collapse" 
+            data-target="#navbarNav" 
+            aria-controls="navbarNav" 
+            aria-expanded={!isNavCollapsed ? true : false} 
+            aria-label="Toggle navigation" 
+            onClick={handleNavCollapse}
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className={`${isNavCollapsed ? 'collapse' : ''} navbar-collapse`} id="navbarNav">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
                 <Link className="nav-link" to="/camera">
