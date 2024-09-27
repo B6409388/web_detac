@@ -2,3 +2,62 @@
   background-color: #7a5af5 !important;
   border: none !important;
 }
+
+/* จัดการขนาดของ container ให้มีระยะขอบ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* สำหรับ navbar */
+.navbar {
+  padding: 0.5rem 1rem;
+}
+
+.navbar-nav {
+  flex-direction: row;
+}
+
+.navbar-nav .nav-link {
+  padding: 0.5rem 1rem;
+}
+
+/* ปรับการแสดงผลให้เป็น column ในหน้าจอเล็ก */
+@media (max-width: 768px) {
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .navbar-brand {
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+  }
+}
+
+/* เพิ่มระยะขอบในส่วน Home */
+.mt-4 {
+  margin-top: 2rem;
+}
+
+/* ปรับขนาดฟอนต์และระยะห่างในหน้าจอเล็ก */
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.25rem;
+  }
+
+  .mt-4 h2 {
+    font-size: 1.5rem;
+  }
+
+  .mt-4 p {
+    font-size: 1rem;
+  }
+}
+
