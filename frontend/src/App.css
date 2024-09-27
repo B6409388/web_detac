@@ -3,27 +3,11 @@
   border: none !important;
 }
 
-/* จัดการขนาดของ container ให้มีระยะขอบ */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* สำหรับ navbar */
-.navbar {
-  padding: 0.5rem 1rem;
-}
-
+/* ปรับการแสดงผลของ navbar บนหน้าจอขนาดเล็ก */
 .navbar-nav {
   flex-direction: row;
 }
 
-.navbar-nav .nav-link {
-  padding: 0.5rem 1rem;
-}
-
-/* ปรับการแสดงผลให้เป็น column ในหน้าจอเล็ก */
 @media (max-width: 768px) {
   .navbar-nav {
     flex-direction: column;
@@ -41,12 +25,11 @@
   }
 }
 
-/* เพิ่มระยะขอบในส่วน Home */
 .mt-4 {
   margin-top: 2rem;
 }
 
-/* ปรับขนาดฟอนต์และระยะห่างในหน้าจอเล็ก */
+/* ปรับขนาดฟอนต์และระยะห่างในหน้าจอขนาดเล็ก */
 @media (max-width: 576px) {
   .navbar-brand {
     font-size: 1.25rem;
