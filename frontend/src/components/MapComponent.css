@@ -1,0 +1,31 @@
+.custom-marker {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+}
+
+.popup-content {
+  text-align: center;
+  padding: 5px;
+}
+
+.popup-plate {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.popup-province {
+  font-size: 1em;
+  color: #666;
+}
+
+.leaflet-popup-content-wrapper {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff;
+}
