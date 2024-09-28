@@ -1,21 +1,49 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Button } from "react-bootstrap";
 import Webcam from "react-webcam";
 import { useGeolocated } from "react-geolocated";
-import "./camera.css"
+import "./camera.css";
 
 const CameraComponent = () => {
   const webcamRef = useRef(null);
+  const [position, setPosition] = useState(null);
 
-  const { coords, isGeolocationAvailable, isGeolocationEnabled } =
-    useGeolocated({
-      positionOptions: {
-        enableHighAccuracy: true,
+  const {
+    coords,
+    isGeolocationAvailable,
+    isGeolocationEnabled,
+    getPosition,
+  } = useGeolocated({
+    positionOptions: {
+      enableHighAccuracy: true,
+      maximumAge: 0, // No cache, always get fresh location
+      timeout: 10000, // Timeout if it takes too long to get position
+    },
+    userDecisionTimeout: 5000,
+  });
+
+  // Continuously watch for position updates to get better accuracy
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        setPosition({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+          accuracy: pos.coords.accuracy,
+        });
       },
-      userDecisionTimeout: 5000,
-    });
+      (error) => console.error("Error fetching location", error),
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000,
+      }
+    );
 
-  // ฟังก์ชันส่งข้อมูลไปยัง Backend
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  // Function to send data to the backend
   const sendToBackend = async (data) => {
     try {
       const response = await fetch(
@@ -41,7 +69,7 @@ const CameraComponent = () => {
   };
 
   const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot(); // ถ่ายรูปและแปลงเป็น Base64
+    const imageSrc = webcamRef.current.getScreenshot(); // Take picture and convert to Base64
 
     if (!isGeolocationAvailable) {
       console.error("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
@@ -53,11 +81,12 @@ const CameraComponent = () => {
       return;
     }
 
-    if (coords) {
+    if (position) {
       const data = {
         image: imageSrc,
-        lat: coords.latitude,
-        long: coords.longitude,
+        lat: position.latitude,
+        long: position.longitude,
+        accuracy: position.accuracy, // Additional info about accuracy
       };
 
       console.log("ข้อมูลที่จะส่ง:", data);
