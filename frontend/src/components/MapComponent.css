@@ -6,6 +6,8 @@
 .popup-content {
   text-align: center;
   padding: 5px;
+  max-width: 200px; /* กำหนดขนาดของ popup เพื่อไม่ให้ล้น */
+  word-wrap: break-word; /* ป้องกันข้อความล้นออกนอกกรอบ */
 }
 
 .popup-plate {
@@ -58,5 +60,12 @@
 
 .search-button:hover {
   background-color: #0056b3;
+}
+
+.popup-content img {
+  max-width: 100%; /* จำกัดขนาดรูปภาพให้ไม่เกินขนาด container */
+  height: auto; /* รักษาอัตราส่วนของรูปภาพ */
+  display: block;
+  margin: 0 auto; /* ทำให้รูปอยู่กึ่งกลางถ้าจำเป็น */
 }
 

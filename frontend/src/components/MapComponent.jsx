@@ -113,7 +113,7 @@ const MapComponent = () => {
           >
             <Popup>
               <div className="popup-content">
-                <img src={item.licentplateImg} alt="" />
+                <img src={item.licentplateImg} alt="License Plate" />
                 <p className="popup-plate">ทะเบียน: {item.licentplateNumber}</p>
                 <p className="popup-province">จังหวัด: {item.licentplateProvince}</p>
                 <p className="popup-date">จอดเมื่อ: {new Date(item.created_at).toLocaleString()}</p>
