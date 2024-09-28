@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { Button } from "react-bootstrap";
 import Webcam from "react-webcam";
 import { useGeolocated } from "react-geolocated";
+import "./camera.css"
 
 const CameraComponent = () => {
   const webcamRef = useRef(null);
@@ -71,13 +72,15 @@ const CameraComponent = () => {
   };
 
   return (
-    <div className="bg-secondary d-flex flex-column justify-content-center align-items-center">
-      <Webcam
-        audio={false}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints}
-      />
+    <div className=" d-flex flex-column justify-content-center align-items-center">
+      <div className="webcam-container">
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          videoConstraints={videoConstraints}
+        />
+      </div>
       <Button onClick={capture} className="btn-pp">
         ถ่ายรูปและบันทึกตำแหน่ง
       </Button>

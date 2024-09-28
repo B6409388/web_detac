@@ -3,7 +3,7 @@ import axios from "axios";
 const url = "https://web-detac-1.onrender.com/api";
 
 // // ใช้ URL สำหรับ API
-// const url = "http://localhost:3000/api"; // หรือ URL ที่คุณต้องการ เช่น https://web-detac-1.onrender.com/api
+//const url = "http://localhost:3000/api"; // หรือ URL ที่คุณต้องการ เช่น https://web-detac-1.onrender.com/api
 
 // ฟังก์ชันสำหรับสร้างข้อมูลป้ายทะเบียน
 export const createLicensePlate = async (data) => {
