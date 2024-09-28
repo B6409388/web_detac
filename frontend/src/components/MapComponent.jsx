@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { fetchLocations } from "../services/api"; // นำเข้าฟังก์ชันจาก services.js
+import { fetchLocations } from "../services/api";
 import "./MapComponent.css";
 
 // ฟังก์ชันสร้าง custom icon
@@ -18,64 +18,105 @@ const createCustomIcon = (imageUrl) => {
 
 // ฟังก์ชันสำหรับเลื่อนไปยังตำแหน่งที่เลือก
 const FlyToLocation = ({ lat, long, resetLocation }) => {
-  const map = useMap(); // ใช้ useMap เพื่อควบคุมแผนที่
+  const map = useMap();
   useEffect(() => {
     if (lat && long) {
-      map.flyTo([lat, long], 18, { duration: 2 }); // เลื่อนไปยังตำแหน่งและซูมเข้า
-      resetLocation(); // Reset หลังจากเลื่อนไปหาตำแหน่งเสร็จ
+      map.flyTo([lat, long], 18, { duration: 2 });
+      resetLocation();
     }
   }, [lat, long, map, resetLocation]);
-  return null; // ไม่ต้องการ render อะไรจาก component นี้
+  return null;
+};
+
+// ฟังก์ชันคำนวณระยะห่างระหว่างสองพิกัด โดยใช้สูตร Haversine และแปลงระยะห่างเป็นเมตร
+const calculateDistanceInMeters = (lat1, lon1, lat2, lon2) => {
+  const toRad = (value) => (value * Math.PI) / 180;
+  const R = 6371e3; // รัศมีโลกเป็นเมตร (6371 กิโลเมตร = 6371e3 เมตร)
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // ระยะห่างเป็นเมตร
+};
+
+// ฟังก์ชันสร้าง Map ที่เก็บตำแหน่งที่ไม่ซ้ำกัน โดยใช้เกณฑ์ระยะห่างในระดับเมตร
+const generateUniqueLocationMap = (locations) => {
+  const locationMap = new Map();
+  const threshold = 10; // กำหนดระยะห่างสูงสุด (หน่วยเป็นเมตร) ที่จะถือว่าซ้ำกัน
+
+  locations.forEach((item) => {
+    let foundDuplicate = false;
+
+    for (let [key, existingItem] of locationMap.entries()) {
+      const [lat, lon] = key.split(",").map(Number);
+      const distance = calculateDistanceInMeters(lat, lon, item.lat, item.long);
+
+      if (distance < threshold) {
+        // ถ้าระยะห่างน้อยกว่า threshold ให้ถือว่าซ้ำ
+        locationMap.set(key, item); // แทนที่ข้อมูลเก่าใน Map ด้วยข้อมูลใหม่
+        foundDuplicate = true;
+        break;
+      }
+    }
+
+    if (!foundDuplicate) {
+      const key = `${item.lat},${item.long}`; // ใช้ lat,long เป็น key ถ้าไม่ซ้ำ
+      locationMap.set(key, item);
+    }
+  });
+
+  return Array.from(locationMap.values()); // แปลง Map กลับเป็น array
 };
 
 const MapComponent = () => {
-  const [locations, setLocations] = useState([]); // สร้าง state สำหรับเก็บ location
-  const [loading, setLoading] = useState(true);  // จัดการ loading state
-  const [searchTerm, setSearchTerm] = useState(""); // สร้าง state สำหรับเก็บข้อมูลที่ค้นหา
-  const [filteredLocation, setFilteredLocation] = useState(null); // เก็บ location ที่ค้นหาแล้วเจอ
-  const popupRefs = useRef([]); // สร้าง ref สำหรับเก็บ Popup ของ Marker
+  const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredLocation, setFilteredLocation] = useState(null);
+  const popupRefs = useRef([]);
 
   useEffect(() => {
-    // ใช้ฟังก์ชันจาก services เพื่อดึงข้อมูล
     const loadLocations = async () => {
       try {
-        const data = await fetchLocations(); // เรียกใช้ฟังก์ชันที่เราสร้างใน services
-        setLocations(data); // เก็บข้อมูลใน state
-        setLoading(false); // ปิด loading state
+        const data = await fetchLocations();
+        setLocations(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error loading locations:", error);
-        setLoading(false); // ถ้าดึงข้อมูลไม่ได้ ให้ปิด loading state
+        setLoading(false);
       }
     };
 
     loadLocations();
   }, []);
 
-  // ฟังก์ชันสำหรับจัดการการค้นหาเมื่อกดปุ่ม Search
+  // ฟังก์ชัน handle สำหรับค้นหาป้ายทะเบียน
   const handleSearch = () => {
-    // กรอง location ตามป้ายทะเบียนที่ค้นหา
-    const filtered = locations.find((item, index) =>
+    const filtered = locations.find((item) =>
       item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // ถ้ามีป้ายทะเบียนที่ค้นหาเจอ ให้ตั้งค่าตำแหน่งที่เจอและเปิด Popup
     if (filtered) {
-      const index = locations.indexOf(filtered); // หา index ของตำแหน่งที่ค้นเจอ
-      setFilteredLocation(filtered); // เลือกตำแหน่งแรกที่เจอ
-      popupRefs.current[index].openPopup(); // เปิด Popup ของตำแหน่งที่ค้นเจอ
+      const index = locations.indexOf(filtered);
+      setFilteredLocation(filtered);
+      popupRefs.current[index].openPopup();
     } else {
-      alert("ไม่พบป้ายทะเบียนที่ค้นหา"); // แจ้งเตือนถ้าไม่เจอป้ายทะเบียน
+      alert("ไม่พบป้ายทะเบียนที่ค้นหา");
     }
   };
 
-  // ฟังก์ชัน reset สถานะหลังจาก flyTo เรียบร้อย
   const resetLocation = () => {
     setFilteredLocation(null);
   };
 
   if (loading) {
-    return <div>Loading map...</div>; // แสดงข้อความระหว่างกำลังโหลดข้อมูล
+    return <div>Loading map...</div>;
   }
+
+  // สร้างตำแหน่งที่ไม่ซ้ำกัน โดยใช้ฟังก์ชัน generateUniqueLocationMap
+  const uniqueLocations = generateUniqueLocationMap(locations);
 
   return (
     <div>
@@ -84,14 +125,14 @@ const MapComponent = () => {
           type="text"
           placeholder="ค้นหาป้ายทะเบียน..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} // จัดการการเปลี่ยนแปลงของ input
+          onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
         <button onClick={handleSearch} className="search-button">
           Search
         </button>
       </div>
-      
+
       <MapContainer
         center={[14.8824, 102.0174]} // ตำแหน่งเริ่มต้นของแผนที่
         zoom={16}
@@ -99,21 +140,21 @@ const MapComponent = () => {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {/* ถ้ามีการค้นหาที่เจอให้เลื่อนไปยังตำแหน่งนั้น */}
         {filteredLocation && (
           <FlyToLocation
             lat={filteredLocation.lat}
             long={filteredLocation.long}
-            resetLocation={resetLocation} // Reset สถานะหลังจาก flyTo เสร็จ
+            resetLocation={resetLocation}
           />
         )}
 
-        {locations.map((item, index) => (
+        {/* แสดง Marker สำหรับตำแหน่งที่ไม่ซ้ำกัน */}
+        {uniqueLocations.map((item, index) => (
           <Marker
             key={index}
-            position={[item.lat, item.long]} // ดึง lat, long จากข้อมูลที่ได้จาก backend
-            icon={createCustomIcon(item.licentplateImg)} // สร้าง icon จาก url ของภาพ
-            ref={(ref) => (popupRefs.current[index] = ref)} // เก็บ ref ของ Popup แต่ละตัว
+            position={[item.lat, item.long]}
+            icon={createCustomIcon(item.licentplateImg)}
+            ref={(ref) => (popupRefs.current[index] = ref)}
           >
             <Popup>
               <div className="popup-content">
