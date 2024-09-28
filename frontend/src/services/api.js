@@ -30,3 +30,14 @@ export const fetchLocations = async () => {
     throw error; // โยน error กลับไปหากเกิดข้อผิดพลาด
   }
 };
+
+// ฟังก์ชันสำหรับลบข้อมูลทั้งหมด
+export const deleteAllData = async () => {
+  try {
+    const response = await axios.delete(`${url}/data`); // ส่งคำขอลบข้อมูลทั้งหมดไปยัง API
+    return response.data; // ส่งกลับข้อมูลที่ได้รับจากเซิร์ฟเวอร์
+  } catch (error) {
+    console.error("Error deleting all data:", error);
+    throw error; // โยน error กลับไปหากเกิดข้อผิดพลาด
+  }
+};

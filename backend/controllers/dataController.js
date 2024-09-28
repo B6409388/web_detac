@@ -52,3 +52,16 @@ exports.getDataById = async (req, res) => {
     res.status(500).json({ message: error.message }); // ส่งข้อผิดพ
   }
 }
+
+//delete all
+ // ��ังก์ชันลบข้อมูลทั้งหมด
+exports.deleteAllData = async (req, res) => {
+  try {
+    await LicensePlate.deleteMany(); // ลบข้อมูลทั้งหมด
+
+    res.json({ message: "ข้อมูลทั้งหมดถูกลบแล้ว" }); // ส่งข้อมูลที่ถูกลบกลับไปยัง client
+  } catch (error) {
+    res.status(500).json({ message: error.message }); // ส่งข้อ��ิดพลา��กลับไปยัง client
+  }
+};
+
