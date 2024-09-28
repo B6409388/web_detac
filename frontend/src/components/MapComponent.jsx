@@ -115,7 +115,7 @@ const MapComponent = () => {
   const handleDeleteAll = async () => {
     try {
       await deleteAllData(); // เรียกใช้ฟังก์ชันลบข้อมูล
-      alert("ลบข้อมูลทั้งหมดสำเร็จ");
+      alert("ลบข้อมูลทั้งหมดสำเร็จไปถ่ายใหม่ครับ :)");
       window.location.reload(); // รีเฟรชหน้าเมื่อกดลบข้อมูลทั้งหมด
     } catch (error) {
       console.error("Error deleting data:", error);
@@ -144,7 +144,7 @@ const MapComponent = () => {
           Search
         </button>
         <button onClick={handleDeleteAll} className="delete-button">
-          ลบข้อมูลทั้งหมด
+        ลบข้อมูลทั้งหมดสำเร็จไปถ่ายใหม่ครับ :
         </button>
       </div>
 
