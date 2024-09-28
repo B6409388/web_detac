@@ -9,7 +9,7 @@ import "./MapComponent.css";
 const createCustomIcon = (imageUrl) => {
   return L.icon({
     iconUrl: imageUrl,
-    iconSize: [20, 20],
+    iconSize: [50, 50],
     iconAnchor: [30, 40],
     popupAnchor: [0, -40],
     className: "custom-marker",
