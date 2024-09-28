@@ -28,48 +28,6 @@ const FlyToLocation = ({ lat, long, resetLocation }) => {
   return null;
 };
 
-// ฟังก์ชันคำนวณระยะห่างระหว่างสองพิกัด โดยใช้สูตร Haversine
-const calculateDistance = (lat1, lon1, lat2, lon2) => {
-  const toRad = (value) => (value * Math.PI) / 180;
-  const R = 6371; // รัศมีโลกเป็นกิโลเมตร
-  const dLat = toRad(lat2 - lat1);
-  const dLon = toRad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // ระยะห่างเป็นกิโลเมตร
-};
-
-// ฟังก์ชันสร้าง Map ที่เก็บตำแหน่งที่ไม่ซ้ำกัน โดยใช้เกณฑ์ระยะห่างในระดับเมตร
-const generateUniqueLocationMap = (locations) => {
-  const locationMap = new Map();
-  const threshold = 10; // กำหนดระยะห่างสูงสุด (หน่วยเป็นเมตร) ที่จะถือว่าซ้ำกัน
-
-  locations.forEach((item) => {
-    let foundDuplicate = false;
-
-    for (let [key, existingItem] of locationMap.entries()) {
-      const [lat, lon] = key.split(",").map(Number);
-      const distance = calculateDistance(lat, lon, item.lat, item.long);
-
-      if (distance < threshold) {
-        // ถ้าระยะห่างน้อยกว่า threshold ให้ถือว่าซ้ำ
-        locationMap.set(key, item); // แทนที่ข้อมูลเก่าใน Map ด้วยข้อมูลใหม่
-        foundDuplicate = true;
-        break;
-      }
-    }
-
-    if (!foundDuplicate) {
-      const key = `${item.lat},${item.long}`; // ใช้ lat,long เป็น key ถ้าไม่ซ้ำ
-      locationMap.set(key, item);
-    }
-  });
-
-  return Array.from(locationMap.values()); // แปลง Map กลับเป็น array
-};
-
 const MapComponent = () => {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -127,8 +85,6 @@ const MapComponent = () => {
     return <div>Loading map...</div>;
   }
 
-  // สร้างตำแหน่งที่ไม่ซ้ำกัน โดยใช้ฟังก์ชัน generateUniqueLocationMap
-  const uniqueLocations = generateUniqueLocationMap(locations);
 
   return (
     <div>
@@ -163,8 +119,8 @@ const MapComponent = () => {
           />
         )}
 
-        {/* แสดง Marker สำหรับตำแหน่งที่ไม่ซ้ำกัน */}
-        {uniqueLocations.map((item, index) => (
+        
+        {locations.map((item, index) => (
           <Marker
             key={index}
             position={[item.lat, item.long]}
