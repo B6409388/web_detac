@@ -1,22 +1,56 @@
-.btn-pp {
-  background-color: #7a5af5 !important;
-  border: none !important;
+/* ทำให้ navbar โปร่งใสเริ่มต้น */
+.navbar {
+  background-color: rgba(255, 255, 255, 0.0); /* สีขาวโปร่งใส 20% */
+  
+  
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+/* สีลิงก์ใน navbar และสไตล์การ hover */
+.nav-link {
+  color: #fff !important; /* สีลิงก์เป็นสีขาว เพื่อให้มองเห็นชัดเจนบนวิดีโอ */
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #7a5af5; /* สีเมื่อ hover เป็นสีม่วง */
+}
+
+.navbar-brand {
+  font-size: 1.8rem !important;
+  font-weight: bold !important;
+  color: #fff !important; /* สีของโลโก้ */
+}
+
+.navbar-brand:hover {
+  color: #7a5af5; /* สีของโลโก้เมื่อ hover */
+}
+
+/* ปรับ navbar เมื่อมีการ scroll */
+.navbar.scrolled {
+  background-color: rgba(255, 255, 255, 0); /* เปลี่ยนเป็นสีขาวโปร่งใสเมื่อ scroll */
+  backdrop-filter: blur(10px); /* ทำให้เบลอมากขึ้น */
 }
 
 /* ปรับการแสดงผลของ navbar บนหน้าจอขนาดเล็ก */
 .navbar-nav {
   flex-direction: row;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
   .navbar-nav {
     flex-direction: column;
     width: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* เพิ่มพื้นหลังขาวเมื่อเป็นเมนูมือถือ */
   }
 
   .navbar-nav .nav-link {
     padding: 1rem;
     text-align: center;
+    color: #000 !important;
+
   }
 
   .navbar-brand {
@@ -25,23 +59,46 @@
   }
 }
 
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 10.25rem;
+  }
+}
+
 .mt-4 {
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
-/* ปรับขนาดฟอนต์และระยะห่างในหน้าจอขนาดเล็ก */
-@media (max-width: 576px) {
-  .navbar-brand {
-    font-size: 1.25rem;
-  }
-
-  .mt-4 h2 {
-    font-size: 1.5rem;
-  }
-
-  .mt-4 p {
-    font-size: 1rem;
-  }
+#background-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1; /* วิดีโออยู่ด้านหลัง */
+  object-fit: cover; /* ปรับขนาดให้เต็มโดยไม่ทำให้วิดีโอเสียสัดส่วน */
 }
 
+/* เพื่อให้แน่ใจว่าคอนเทนต์อยู่เหนือวิดีโอ */
+.app {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0); /* เปลี่ยนสีข้อความเพื่อให้มองเห็นชัดเจนบนวิดีโอ */
+}
+
+.container {
+  position: relative;
+  z-index: 2; /* คอนเทนต์อยู่บนวิดีโอ */
+}
+
+.navbar-toggler{
+  color: white !important; /* เปลี่ยนสีของ toggle button */
+  background-color: #fff !important;
+  .nav-item{
+    a.nav-link{
+      color: #000 !important; 
+
+    }
+  }
+}

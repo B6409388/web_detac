@@ -1,0 +1,72 @@
+/* Default (Desktop and large devices) */
+.bg-secondary {
+    background-color: #6c757d;
+    /* width: 100vw; */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* padding: 20px; */
+}
+
+.webcam-container {
+    width: 100%;
+    max-width: 600px;
+    /* Constrain the webcam size on larger screens */
+    margin-bottom: 20px;
+}
+
+button.btn-pp {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px;
+    font-size: 16px;
+}
+
+/* Tablet view */
+@media (max-width: 768px) {
+    .bg-secondary {
+        padding: 15px;
+    }
+
+    .webcam-container {
+        max-width: 90%;
+        /* Slightly larger webcam container on tablet */
+    }
+
+    button.btn-pp {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Mobile view */
+@media (max-width: 576px) {
+    .bg-secondary {
+        padding: 10px;
+    }
+
+    .webcam-container {
+        max-width: 100%;
+        /* Full width for the webcam on mobile */
+    }
+
+    button.btn-pp {
+        font-size: 14px;
+        padding: 10px;
+        max-width: 100%;
+        /* Full width for the button on mobile */
+    }
+}
+
+video {
+    width: 100%;
+    /* Make the video take up the full width of its container */
+    height: auto;
+    /* Adjust height to maintain aspect ratio */
+    object-fit: contain;
+    /* Ensure the video scales to fit inside the container */
+    overflow-clip-margin: content-box;
+    overflow: clip;
+}
