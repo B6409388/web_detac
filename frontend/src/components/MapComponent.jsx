@@ -6,19 +6,15 @@ import { fetchLocations } from "../services/api"; // นำเข้าฟัง
 import "./MapComponent.css";
 
 // ฟังก์ชันสร้าง custom icon
-const createCustomIcon = () => {
+const createCustomIcon = (imageUrl) => {
   return L.icon({
-    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png", // หมุดสีแดงจาก GitHub
-    iconSize: [25, 41], // ขนาดเริ่มต้นของไอคอน Leaflet
-    iconAnchor: [12, 41], // จุดยึดตำแหน่ง (กลางและปลายด้านล่าง)
-    popupAnchor: [1, -34], // จุดยึดป็อปอัพ
-    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png", // เงาของไอคอน
-    shadowSize: [41, 41], // ขนาดเงา
-    shadowAnchor: [12, 41], // จุดยึดเงา
+    iconUrl: imageUrl,
+    iconSize: [40, 20],
+    iconAnchor: [30, 40],
+    popupAnchor: [0, -40],
     className: "custom-marker",
   });
 };
-
 
 // ฟังก์ชันสำหรับเลื่อนไปยังตำแหน่งที่เลือก
 const FlyToLocation = ({ lat, long, resetLocation }) => {
