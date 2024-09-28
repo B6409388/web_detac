@@ -21,7 +21,7 @@ const FlyToLocation = ({ lat, long, resetLocation }) => {
   const map = useMap(); // ใช้ useMap เพื่อควบคุมแผนที่
   useEffect(() => {
     if (lat && long) {
-      map.flyTo([lat, long], 18, { duration: 2 }); // เลื่อนไปยังตำแหน่งและซูมเข้า
+      map.flyTo([lat, long], 21, { duration: 2 }); // เลื่อนไปยังตำแหน่งและซูมเข้า
       resetLocation(); // Reset หลังจากเลื่อนไปหาตำแหน่งเสร็จ
     }
   }, [lat, long, map, resetLocation]);
@@ -91,7 +91,7 @@ const MapComponent = () => {
       
       <MapContainer
         center={[14.8824, 102.0174]} // ตำแหน่งเริ่มต้นของแผนที่
-        zoom={20}
+        zoom={30}
         style={{ height: "500px", width: "100%" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
