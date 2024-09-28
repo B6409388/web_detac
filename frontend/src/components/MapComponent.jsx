@@ -28,19 +28,18 @@ const FlyToLocation = ({ lat, long, resetLocation }) => {
   return null;
 };
 
-// ฟังก์ชันคำนวณระยะห่างระหว่างสองพิกัด โดยใช้สูตร Haversine และแปลงระยะห่างเป็นเมตร
-const calculateDistanceInMeters = (lat1, lon1, lat2, lon2) => {
+// ฟังก์ชันคำนวณระยะห่างระหว่างสองพิกัด โดยใช้สูตร Haversine
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const toRad = (value) => (value * Math.PI) / 180;
-  const R = 6371e3; // รัศมีโลกเป็นเมตร (6371 กิโลเมตร = 6371e3 เมตร)
+  const R = 6371; // รัศมีโลกเป็นกิโลเมตร
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c; // ระยะห่างเป็นเมตร
+  return R * c; // ระยะห่างเป็นกิโลเมตร
 };
-
 // ฟังก์ชันสร้าง Map ที่เก็บตำแหน่งที่ไม่ซ้ำกัน โดยใช้เกณฑ์ระยะห่างในระดับเมตร
 const generateUniqueLocationMap = (locations) => {
   const locationMap = new Map();
