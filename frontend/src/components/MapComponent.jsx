@@ -8,13 +8,17 @@ import "./MapComponent.css";
 // ฟังก์ชันสร้าง custom icon
 const createCustomIcon = () => {
   return L.icon({
-    iconUrl: "https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FF0000", // หมุดสีแดง
-    iconSize: [30, 50],  // ขนาดไอคอน
-    iconAnchor: [15, 50], // จุดที่ไอคอนจะยึดติดกับตำแหน่ง (กลางและปลายด้านล่าง)
-    popupAnchor: [0, -50], // จุดยึดของป็อปอัพ
+    iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png", // หมุดสีแดงจาก GitHub
+    iconSize: [25, 41], // ขนาดเริ่มต้นของไอคอน Leaflet
+    iconAnchor: [12, 41], // จุดยึดตำแหน่ง (กลางและปลายด้านล่าง)
+    popupAnchor: [1, -34], // จุดยึดป็อปอัพ
+    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png", // เงาของไอคอน
+    shadowSize: [41, 41], // ขนาดเงา
+    shadowAnchor: [12, 41], // จุดยึดเงา
     className: "custom-marker",
   });
 };
+
 
 // ฟังก์ชันสำหรับเลื่อนไปยังตำแหน่งที่เลือก
 const FlyToLocation = ({ lat, long, resetLocation }) => {
