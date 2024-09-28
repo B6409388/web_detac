@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -33,6 +33,7 @@ const MapComponent = () => {
   const [loading, setLoading] = useState(true);  // จัดการ loading state
   const [searchTerm, setSearchTerm] = useState(""); // สร้าง state สำหรับเก็บข้อมูลที่ค้นหา
   const [filteredLocation, setFilteredLocation] = useState(null); // เก็บ location ที่ค้นหาแล้วเจอ
+  const popupRefs = useRef([]); // สร้าง ref สำหรับเก็บ Popup ของ Marker
 
   useEffect(() => {
     // ใช้ฟังก์ชันจาก services เพื่อดึงข้อมูล
@@ -53,13 +54,15 @@ const MapComponent = () => {
   // ฟังก์ชันสำหรับจัดการการค้นหาเมื่อกดปุ่ม Search
   const handleSearch = () => {
     // กรอง location ตามป้ายทะเบียนที่ค้นหา
-    const filtered = locations.find((item) =>
+    const filtered = locations.find((item, index) =>
       item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // ถ้ามีป้ายทะเบียนที่ค้นหาเจอ ให้ตั้งค่าตำแหน่งที่เจอ
+    // ถ้ามีป้ายทะเบียนที่ค้นหาเจอ ให้ตั้งค่าตำแหน่งที่เจอและเปิด Popup
     if (filtered) {
+      const index = locations.indexOf(filtered); // หา index ของตำแหน่งที่ค้นเจอ
       setFilteredLocation(filtered); // เลือกตำแหน่งแรกที่เจอ
+      popupRefs.current[index].openPopup(); // เปิด Popup ของตำแหน่งที่ค้นเจอ
     } else {
       alert("ไม่พบป้ายทะเบียนที่ค้นหา"); // แจ้งเตือนถ้าไม่เจอป้ายทะเบียน
     }
@@ -110,6 +113,7 @@ const MapComponent = () => {
             key={index}
             position={[item.lat, item.long]} // ดึง lat, long จากข้อมูลที่ได้จาก backend
             icon={createCustomIcon(item.licentplateImg)} // สร้าง icon จาก url ของภาพ
+            ref={(ref) => (popupRefs.current[index] = ref)} // เก็บ ref ของ Popup แต่ละตัว
           >
             <Popup>
               <div className="popup-content">
