@@ -91,7 +91,7 @@ const MapComponent = () => {
       
       <MapContainer
         center={[14.8824, 102.0174]} // ตำแหน่งเริ่มต้นของแผนที่
-        zoom={16}
+        zoom={5}
         style={{ height: "500px", width: "100%" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
