@@ -6,12 +6,12 @@ import { fetchLocations } from "../services/api"; // นำเข้าฟัง
 import "./MapComponent.css";
 
 // ฟังก์ชันสร้าง custom icon
-const createCustomIcon = (imageUrl) => {
+const createCustomIcon = () => {
   return L.icon({
-    iconUrl: imageUrl,
-    iconSize: [50, 30],
-    iconAnchor: [30, 40],
-    popupAnchor: [0, -40],
+    iconUrl: "https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FF0000", // หมุดสีแดง
+    iconSize: [30, 50],  // ขนาดไอคอน
+    iconAnchor: [15, 50], // จุดที่ไอคอนจะยึดติดกับตำแหน่ง (กลางและปลายด้านล่าง)
+    popupAnchor: [0, -50], // จุดยึดของป็อปอัพ
     className: "custom-marker",
   });
 };
