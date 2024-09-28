@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { fetchLocations } from "../services/api";
+import { fetchLocations, deleteAllData } from "../services/api"; // นำเข้าฟังก์ชัน deleteAllData
 import "./MapComponent.css";
 
 // ฟังก์ชันสร้าง custom icon
@@ -111,6 +111,18 @@ const MapComponent = () => {
     setFilteredLocation(null);
   };
 
+  // ฟังก์ชันสำหรับลบข้อมูลทั้งหมด
+  const handleDeleteAll = async () => {
+    try {
+      await deleteAllData(); // เรียกใช้ฟังก์ชันลบข้อมูล
+      alert("ลบข้อมูลทั้งหมดสำเร็จ");
+      window.location.reload(); // รีเฟรชหน้าเมื่อกดลบข้อมูลทั้งหมด
+    } catch (error) {
+      console.error("Error deleting data:", error);
+      alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+    }
+  };
+
   if (loading) {
     return <div>Loading map...</div>;
   }
@@ -130,6 +142,9 @@ const MapComponent = () => {
         />
         <button onClick={handleSearch} className="search-button">
           Search
+        </button>
+        <button onClick={handleDeleteAll} className="delete-button">
+          ลบข้อมูลทั้งหมด
         </button>
       </div>
 
