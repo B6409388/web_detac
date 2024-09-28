@@ -40,6 +40,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // ระยะห่างเป็นกิโลเมตร
 };
+
 // ฟังก์ชันสร้าง Map ที่เก็บตำแหน่งที่ไม่ซ้ำกัน โดยใช้เกณฑ์ระยะห่างในระดับเมตร
 const generateUniqueLocationMap = (locations) => {
   const locationMap = new Map();
@@ -50,7 +51,7 @@ const generateUniqueLocationMap = (locations) => {
 
     for (let [key, existingItem] of locationMap.entries()) {
       const [lat, lon] = key.split(",").map(Number);
-      const distance = calculateDistanceInMeters(lat, lon, item.lat, item.long);
+      const distance = calculateDistance(lat, lon, item.lat, item.long);
 
       if (distance < threshold) {
         // ถ้าระยะห่างน้อยกว่า threshold ให้ถือว่าซ้ำ
@@ -143,7 +144,7 @@ const MapComponent = () => {
           Search
         </button>
         <button onClick={handleDeleteAll} className="delete-button">
-        ลบข้อมูลทั้งหมดสำเร็จไปถ่ายใหม่ครับ :
+          ลบข้อมูลทั้งหมดสำเร็จไปถ่ายใหม่ครับ :
         </button>
       </div>
 
