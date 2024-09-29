@@ -5,6 +5,22 @@ import L from "leaflet";
 import { fetchLocations, deleteAllData } from "../services/api"; // นำเข้าฟังก์ชัน deleteAllData
 import "./MapComponent.css";
 
+// ฟังก์ชันคำนวณระยะทางระหว่างพิกัดสองจุด (หน่วย: เมตร)
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371000; // รัศมีของโลกในเมตร
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  return distance; // ระยะทางเป็นเมตร
+};
+
 // ฟังก์ชันสร้าง custom icon
 const createCustomIcon = (imageUrl) => {
   return L.icon({
@@ -40,11 +56,18 @@ const MapComponent = () => {
       try {
         const data = await fetchLocations();
 
-        // อัปเดตข้อมูลหากมีรถจอดซ้ำตำแหน่งเดิม
+        // อัปเดตข้อมูลหากมีรถจอดในระยะห่างกันน้อยกว่า 3 เมตร
         const updatedLocations = data.reduce((acc, currentLocation) => {
-          const existingIndex = acc.findIndex(
-            (loc) => loc.lat === currentLocation.lat && loc.long === currentLocation.long
-          );
+          const existingIndex = acc.findIndex((loc) => {
+            const distance = calculateDistance(
+              loc.lat,
+              loc.long,
+              currentLocation.lat,
+              currentLocation.long
+            );
+            return distance < 3; // ถ้าระยะห่างน้อยกว่า 3 เมตรถือว่าจอดทับตำแหน่งเดิม
+          });
+
           if (existingIndex !== -1) {
             acc[existingIndex] = currentLocation; // แทนที่ข้อมูลที่มีอยู่
           } else {
