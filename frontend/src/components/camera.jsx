@@ -16,8 +16,8 @@ const CameraComponent = () => {
   } = useGeolocated({
     positionOptions: {
       enableHighAccuracy: true,
-      maximumAge: 0, // No cache, always get fresh location
-      timeout: 10000, // Timeout if it takes too long to get position
+      maximumAge: 0,
+      timeout: 10000,
     },
     userDecisionTimeout: 5000,
   });
@@ -63,8 +63,10 @@ const CameraComponent = () => {
 
       const result = await response.json();
       console.log("ผลลัพธ์จาก Backend:", result);
+      alert("ถ่ายรูปและบันทึกตำแหน่งสำเร็จ!"); // Show success alert
     } catch (error) {
       console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
+      alert("เกิดข้อผิดพลาดในการส่งข้อมูลไปยังเซิร์ฟเวอร์"); // Show error alert
     }
   };
 
@@ -73,11 +75,13 @@ const CameraComponent = () => {
 
     if (!isGeolocationAvailable) {
       console.error("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
+      alert("เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง");
       return;
     }
 
     if (!isGeolocationEnabled) {
       console.error("คุณยังไม่ได้เปิดการใช้งานระบุตำแหน่ง");
+      alert("กรุณาเปิดการใช้งานระบุตำแหน่ง");
       return;
     }
 
@@ -93,6 +97,7 @@ const CameraComponent = () => {
       sendToBackend(data);
     } else {
       console.log("กำลังรอรับข้อมูลตำแหน่ง...");
+      alert("กำลังรอรับข้อมูลตำแหน่ง...");
     }
   };
 
@@ -101,7 +106,7 @@ const CameraComponent = () => {
   };
 
   return (
-    <div className=" d-flex flex-column justify-content-center align-items-center">
+    <div className="d-flex flex-column justify-content-center align-items-center">
       <div className="webcam-container">
         <Webcam
           audio={false}

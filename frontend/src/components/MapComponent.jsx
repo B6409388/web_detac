@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { fetchLocations, deleteAllData } from "../services/api"; // นำเข้าฟังก์ชัน deleteAllData
+import { fetchLocations, deleteAllData } from "../services/api";
 import "./MapComponent.css";
 
 // ฟังก์ชันสร้าง custom icon
@@ -35,29 +35,38 @@ const MapComponent = () => {
   const [filteredLocation, setFilteredLocation] = useState(null);
   const popupRefs = useRef([]);
 
+  // ฟังก์ชันสำหรับโหลดข้อมูลตำแหน่ง
+  const loadLocations = async () => {
+    try {
+      const data = await fetchLocations();
+      
+      // เวลาปัจจุบัน
+      const currentTime = new Date().getTime();
+
+      // กรองข้อมูลที่เก่าเกิน 3 ชั่วโมง (10800000 มิลลิวินาที = 3 ชั่วโมง)
+      const filteredData = data.filter((item) => {
+        const itemTime = new Date(item.created_at).getTime();
+        return currentTime - itemTime <= 10800000; // เก็บเฉพาะข้อมูลที่มีอายุน้อยกว่า 3 ชั่วโมง
+      });
+
+      setLocations(filteredData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error loading locations:", error);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadLocations = async () => {
-      try {
-        const data = await fetchLocations();
-        
-        // เวลาปัจจุบัน
-        const currentTime = new Date().getTime();
-
-        // กรองข้อมูลที่เก่าเกิน 3 ชั่วโมง (10800000 มิลลิวินาที = 3 ชั่วโมง)
-        const filteredData = data.filter((item) => {
-          const itemTime = new Date(item.created_at).getTime();
-          return currentTime - itemTime <= 10800000; // เก็บเฉพาะข้อมูลที่มีอายุน้อยกว่า 3 ชั่วโมง
-        });
-
-        setLocations(filteredData);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error loading locations:", error);
-        setLoading(false);
-      }
-    };
-
     loadLocations();
+
+    // ตั้งค่าให้โหลดข้อมูลใหม่ทุกๆ 30 วินาที
+    const intervalId = setInterval(() => {
+      loadLocations(); // โหลดข้อมูลใหม่
+    }, 30000); // 30000 มิลลิวินาที = 30 วินาที
+
+    // เคลียร์ interval เมื่อ component ถูก unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   // ฟังก์ชัน handle สำหรับค้นหาป้ายทะเบียน
