@@ -39,7 +39,21 @@ const MapComponent = () => {
     const loadLocations = async () => {
       try {
         const data = await fetchLocations();
-        setLocations(data);
+
+        // อัปเดตข้อมูลหากมีรถจอดซ้ำตำแหน่งเดิม
+        const updatedLocations = data.reduce((acc, currentLocation) => {
+          const existingIndex = acc.findIndex(
+            (loc) => loc.lat === currentLocation.lat && loc.long === currentLocation.long
+          );
+          if (existingIndex !== -1) {
+            acc[existingIndex] = currentLocation; // แทนที่ข้อมูลที่มีอยู่
+          } else {
+            acc.push(currentLocation); // เพิ่มข้อมูลใหม่ถ้าไม่ซ้ำ
+          }
+          return acc;
+        }, []);
+
+        setLocations(updatedLocations);
         setLoading(false);
       } catch (error) {
         console.error("Error loading locations:", error);
@@ -85,7 +99,6 @@ const MapComponent = () => {
     return <div>Loading map...</div>;
   }
 
-
   return (
     <div>
       <div className="search-container">
@@ -119,7 +132,6 @@ const MapComponent = () => {
           />
         )}
 
-        
         {locations.map((item, index) => (
           <Marker
             key={index}
