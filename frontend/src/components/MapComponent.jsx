@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { fetchLocations, deleteAllData } from "../services/api";
+import { fetchLocations } from "../services/api";
 import "./MapComponent.css";
 
 // ฟังก์ชันสร้าง custom icon
@@ -30,9 +30,12 @@ const FlyToLocation = ({ lat, long, resetLocation }) => {
 
 const MapComponent = () => {
   const [locations, setLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredLocation, setFilteredLocation] = useState(null);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const popupRefs = useRef([]);
 
   // ฟังก์ชันสำหรับโหลดข้อมูลตำแหน่ง
@@ -40,16 +43,9 @@ const MapComponent = () => {
     try {
       const data = await fetchLocations();
       
-      // เวลาปัจจุบัน
-      const currentTime = new Date().getTime();
-
-      // กรองข้อมูลที่เก่าเกิน 3 ชั่วโมง (10800000 มิลลิวินาที = 3 ชั่วโมง)
-      const filteredData = data.filter((item) => {
-        const itemTime = new Date(item.created_at).getTime();
-        return currentTime - itemTime <= 10800000; // เก็บเฉพาะข้อมูลที่มีอายุน้อยกว่า 3 ชั่วโมง
-      });
-
-      setLocations(filteredData);
+      // โหลดข้อมูลทั้งหมดเข้ามา ไม่กรองตามช่วงเวลาในขั้นตอนนี้
+      setLocations(data);
+      setFilteredLocations(data); // ตั้งค่าเริ่มต้นของ filteredLocations ให้เป็นข้อมูลทั้งหมด
       setLoading(false);
     } catch (error) {
       console.error("Error loading locations:", error);
@@ -59,28 +55,27 @@ const MapComponent = () => {
 
   useEffect(() => {
     loadLocations();
-
-    // ตั้งค่าให้โหลดข้อมูลใหม่ทุกๆ 30 วินาที
-    const intervalId = setInterval(() => {
-      loadLocations(); // โหลดข้อมูลใหม่
-    }, 30000); // 30000 มิลลิวินาที = 30 วินาที
-
-    // เคลียร์ interval เมื่อ component ถูก unmount
-    return () => clearInterval(intervalId);
   }, []);
 
   // ฟังก์ชัน handle สำหรับค้นหาป้ายทะเบียน
   const handleSearch = () => {
-    const filtered = locations.find((item) =>
-      item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+
+    const filtered = filteredLocations.find((item) => {
+      const itemTime = new Date(item.created_at).getTime();
+      
+      // ตรวจสอบทั้งป้ายทะเบียนและช่วงเวลา
+      return item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase()) &&
+             itemTime >= start && itemTime <= end;
+    });
 
     if (filtered) {
-      const index = locations.indexOf(filtered);
+      const index = filteredLocations.indexOf(filtered);
       setFilteredLocation(filtered);
       popupRefs.current[index].openPopup();
     } else {
-      alert("ไม่พบป้ายทะเบียนที่ค้นหา");
+      alert("ไม่พบป้ายทะเบียนที่ค้นหาในช่วงเวลาที่กำหนด");
     }
   };
 
@@ -88,16 +83,17 @@ const MapComponent = () => {
     setFilteredLocation(null);
   };
 
-  // ฟังก์ชันสำหรับลบข้อมูลทั้งหมด
-  const handleDeleteAll = async () => {
-    try {
-      await deleteAllData(); // เรียกใช้ฟังก์ชันลบข้อมูล
-      alert("ลบข้อมูลทั้งหมดสำเร็จไปถ่ายใหม่ครับ :)");
-      window.location.reload(); // รีเฟรชหน้าเมื่อกดลบข้อมูลทั้งหมด
-    } catch (error) {
-      console.error("Error deleting data:", error);
-      alert("เกิดข้อผิดพลาดในการลบข้อมูล");
-    }
+  // ฟังก์ชันสำหรับการกรองตามช่วงเวลา
+  const handleFilterByTime = () => {
+    const start = new Date(startTime).getTime();
+    const end = new Date(endTime).getTime();
+
+    const filteredData = locations.filter((item) => {
+      const itemTime = new Date(item.created_at).getTime();
+      return itemTime >= start && itemTime <= end;
+    });
+
+    setFilteredLocations(filteredData); // ใช้ filteredLocations แทน locations
   };
 
   if (loading) {
@@ -117,8 +113,23 @@ const MapComponent = () => {
         <button onClick={handleSearch} className="search-button">
           Search
         </button>
-        <button onClick={handleDeleteAll} className="delete-button">
-          ลบข้อมูลทั้งหมดสำเร็จไปถ่ายใหม่ครับ :
+      </div>
+
+      <div className="filter-container">
+        <label>เวลาเริ่มต้น:</label>
+        <input
+          type="datetime-local"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+        <label>เวลาสิ้นสุด:</label>
+        <input
+          type="datetime-local"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+        />
+        <button onClick={handleFilterByTime} className="filter-button">
+          Filter
         </button>
       </div>
 
@@ -137,7 +148,7 @@ const MapComponent = () => {
           />
         )}
 
-        {locations.map((item, index) => (
+        {filteredLocations.map((item, index) => (
           <Marker
             key={index}
             position={[item.lat, item.long]}
