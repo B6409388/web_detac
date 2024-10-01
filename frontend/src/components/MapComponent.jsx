@@ -28,14 +28,31 @@ const FlyToLocation = ({ lat, long, resetLocation }) => {
   return null;
 };
 
+// ฟังก์ชันสำหรับตั้งเวลาเที่ยงคืนของวันนี้ (UTC+7)
+const getMidnightTimeInThailand = () => {
+  const now = new Date();
+  now.setHours(0, 0, 0, 0); // ตั้งเวลาเป็นเที่ยงคืน (ตามท้องถิ่น)
+  now.setTime(now.getTime() + 7 * 60 * 60 * 1000); // ปรับเวลาเป็น UTC+7
+  return now.toISOString().slice(0, 16);
+};
+
+// ฟังก์ชันสำหรับตั้งเวลาปัจจุบันในประเทศไทย (UTC+7)
+const getCurrentTimeInThailand = () => {
+  const now = new Date();
+  now.setTime(now.getTime() + 7 * 60 * 60 * 1000); // ปรับเวลาเป็น UTC+7
+  return now.toISOString().slice(0, 16);
+};
+
 const MapComponent = () => {
   const [locations, setLocations] = useState([]);
   const [filteredLocations, setFilteredLocations] = useState([]);
+  const [displayedLocations, setDisplayedLocations] = useState([]); // ใช้แสดงผลที่กรองแล้ว
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredLocation, setFilteredLocation] = useState(null);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  
+  // ตั้งค่าเวลาเริ่มต้นเป็นเที่ยงคืนของวันนี้ในประเทศไทย และเวลาสิ้นสุดเป็นเวลาปัจจุบันในประเทศไทย
+  const [startTime, setStartTime] = useState(getMidnightTimeInThailand()); 
+  const [endTime, setEndTime] = useState(getCurrentTimeInThailand()); // เวลาสิ้นสุดเป็นเวลาปัจจุบัน
   const popupRefs = useRef([]);
 
   // ฟังก์ชันสำหรับโหลดข้อมูลตำแหน่ง
@@ -43,9 +60,10 @@ const MapComponent = () => {
     try {
       const data = await fetchLocations();
       
-      // โหลดข้อมูลทั้งหมดเข้ามา ไม่กรองตามช่วงเวลาในขั้นตอนนี้
+      // โหลดข้อมูลทั้งหมดเข้ามา และไม่ทำการกรอง
       setLocations(data);
       setFilteredLocations(data); // ตั้งค่าเริ่มต้นของ filteredLocations ให้เป็นข้อมูลทั้งหมด
+      setDisplayedLocations(data); // แสดงข้อมูลทั้งหมดเริ่มต้น
       setLoading(false);
     } catch (error) {
       console.error("Error loading locations:", error);
@@ -53,38 +71,8 @@ const MapComponent = () => {
     }
   };
 
-  useEffect(() => {
-    loadLocations();
-  }, []);
-
-  // ฟังก์ชัน handle สำหรับค้นหาป้ายทะเบียน
-  const handleSearch = () => {
-    const start = new Date(startTime).getTime();
-    const end = new Date(endTime).getTime();
-
-    const filtered = filteredLocations.find((item) => {
-      const itemTime = new Date(item.created_at).getTime();
-      
-      // ตรวจสอบทั้งป้ายทะเบียนและช่วงเวลา
-      return item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase()) &&
-             itemTime >= start && itemTime <= end;
-    });
-
-    if (filtered) {
-      const index = filteredLocations.indexOf(filtered);
-      setFilteredLocation(filtered);
-      popupRefs.current[index].openPopup();
-    } else {
-      alert("ไม่พบป้ายทะเบียนที่ค้นหาในช่วงเวลาที่กำหนด");
-    }
-  };
-
-  const resetLocation = () => {
-    setFilteredLocation(null);
-  };
-
-  // ฟังก์ชันสำหรับการกรองตามช่วงเวลา
-  const handleFilterByTime = () => {
+  // ฟังก์ชันสำหรับกรองข้อมูลตามช่วงเวลาที่เลือก
+  const filterLocationsByTime = () => {
     const start = new Date(startTime).getTime();
     const end = new Date(endTime).getTime();
 
@@ -93,8 +81,42 @@ const MapComponent = () => {
       return itemTime >= start && itemTime <= end;
     });
 
-    setFilteredLocations(filteredData); // ใช้ filteredLocations แทน locations
+    setFilteredLocations(filteredData); // กรองข้อมูลที่อยู่ในช่วงเวลานั้น
+    setDisplayedLocations(filteredData); // อัปเดตข้อมูลที่จะแสดงบนแผนที่
   };
+
+  // ฟังก์ชันสำหรับการค้นหาป้ายทะเบียนตามคำค้นหา
+  const handleSearch = () => {
+    // ค้นหาข้อมูลที่ตรงกับป้ายทะเบียนที่ค้นหา แต่ไม่เปลี่ยนแปลง displayedLocations
+    const searchResult = filteredLocations.find((item) => 
+      item.licentplateNumber && 
+      item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    if (searchResult) {
+      // หา index ของข้อมูลที่ค้นหาเจอ
+      const index = filteredLocations.findIndex(item => 
+        item.licentplateNumber && 
+        item.licentplateNumber.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      // เปิด popup โดยใช้ ref
+      if (popupRefs.current[index]) {
+        popupRefs.current[index].openPopup();
+      }
+    } else {
+      alert("ไม่พบป้ายทะเบียนที่ค้นหา");
+    }
+  };
+
+  // เรียกใช้การกรองข้อมูลเมื่อเวลาที่กำหนดเปลี่ยนแปลง
+  useEffect(() => {
+    filterLocationsByTime();
+  }, [startTime, endTime, locations]);
+
+  useEffect(() => {
+    loadLocations(); // โหลดข้อมูลครั้งแรกเมื่อคอมโพเนนต์ถูกติดตั้ง
+  }, []);
 
   if (loading) {
     return <div>Loading map...</div>;
@@ -128,9 +150,6 @@ const MapComponent = () => {
           value={endTime}
           onChange={(e) => setEndTime(e.target.value)}
         />
-        <button onClick={handleFilterByTime} className="filter-button">
-          Filter
-        </button>
       </div>
 
       <MapContainer
@@ -140,20 +159,12 @@ const MapComponent = () => {
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {filteredLocation && (
-          <FlyToLocation
-            lat={filteredLocation.lat}
-            long={filteredLocation.long}
-            resetLocation={resetLocation}
-          />
-        )}
-
-        {filteredLocations.map((item, index) => (
+        {displayedLocations.map((item, index) => (
           <Marker
             key={index}
             position={[item.lat, item.long]}
             icon={createCustomIcon(item.licentplateImg)}
-            ref={(ref) => (popupRefs.current[index] = ref)}
+            ref={(ref) => (popupRefs.current[index] = ref)} // เก็บ ref ของ Marker
           >
             <Popup>
               <div className="popup-content">
