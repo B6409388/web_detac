@@ -36,9 +36,11 @@ const getMidnightTimeInThailand = () => {
   return now.toISOString().slice(0, 16);
 };
 
-// ฟังก์ชันสำหรับตั้งเวลาปัจจุบันในประเทศไทย (UTC+7)
+// ฟังก์ชันสำหรับตั้งเวลาปัจจุบันเป็นเที่ยงคืนของวันถัดไปในประเทศไทย (UTC+7)
 const getCurrentTimeInThailand = () => {
   const now = new Date();
+  now.setDate(now.getDate() + 1); // เพิ่มวันถัดไป
+  now.setHours(0, 0, 0, 0); // ตั้งเวลาเป็นเที่ยงคืน (ตามท้องถิ่น)
   now.setTime(now.getTime() + 7 * 60 * 60 * 1000); // ปรับเวลาเป็น UTC+7
   return now.toISOString().slice(0, 16);
 };
@@ -116,6 +118,10 @@ const MapComponent = () => {
 
   useEffect(() => {
     loadLocations(); // โหลดข้อมูลครั้งแรกเมื่อคอมโพเนนต์ถูกติดตั้ง
+    
+    const intervalId = setInterval(loadLocations, 30000); // รีเฟรชข้อมูลทุก 30 วินาที
+    
+    return () => clearInterval(intervalId); // ลบ interval เมื่อ component ถูกถอดออก
   }, []);
 
   if (loading) {
