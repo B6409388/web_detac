@@ -77,21 +77,22 @@
   }
 }
 
+/* วิดีโอพื้นหลัง */
 #background-video {
   position: fixed;
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -1; /* วิดีโออยู่ด้านหลัง */
-  object-fit: cover; /* ปรับขนาดให้เต็มโดยไม่ทำให้วิดีโอเสียสัดส่วน */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover; /* ครอบคลุมทั้งหน้าจอโดยไม่ทำให้สัดส่วนวิดีโอเสียหาย */
+  z-index: -1; /* ทำให้วิดีโออยู่ด้านหลัง */
 }
 
 /* เพื่อให้แน่ใจว่าคอนเทนต์อยู่เหนือวิดีโอ */
 .app {
   position: relative;
   z-index: 1;
-  color: rgba(255, 255, 255, 0); /* เปลี่ยนสีข้อความเพื่อให้มองเห็นชัดเจนบนวิดีโอ */
+  color: white;
 }
 
 .container {

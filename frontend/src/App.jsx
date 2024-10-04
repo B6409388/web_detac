@@ -15,7 +15,7 @@ function App() {
         <div className="container">
           {/* Background Video */}
           <video autoPlay muted loop id="background-video">
-            <source src="https://digitalassets.tesla.com/tesla-contents/video/upload/f_auto,q_auto/Homepage-Demo-Drive-Mobile-NA.mp4" type="video/mp4" />
+            <source src="https://videos.pexels.com/video-files/28638125/12438300_2560_1440_24fps.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
 
