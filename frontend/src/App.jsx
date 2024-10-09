@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import "./App.css"; // Include CSS for video background
 import CameraComponent from "./components/camera";
 import MapComponent from "./components/MapComponent";
+import TabelComponent from "./components/pagetable";
 import { useState } from "react";
 
 function App() {
@@ -46,6 +47,11 @@ function App() {
                     Map
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/tabel">
+                    Table
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>
@@ -55,6 +61,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/camera" element={<CameraComponent />} />
             <Route path="/map" element={<MapComponent />} />
+            <Route path="/tabel" element={<TabelComponent />} />
           </Routes>
         </div>
       </Router>
